@@ -364,6 +364,13 @@ canvas {
 .error.show {
   display: block;
 }
+
+.options {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-top: 9px;
+}
 </style>
 </head>
 
@@ -607,6 +614,10 @@ Contrast
 🪞 Mirror ON
 </button>
 
+<button id="flashBtn">
+⚡ Flash ON
+</button>
+
 </div>
 
 
@@ -699,6 +710,11 @@ document.getElementById("cameraBtn");
 
 const mirrorBtn =
 document.getElementById("mirrorBtn");
+
+const flashBtn =
+document.getElementById("flashBtn");
+
+let flashEnabled = true;
 
 const counter =
 document.getElementById("counter");
@@ -1399,6 +1415,40 @@ function applyFilter(
 
 }
 
+/* =========================
+   FLASH ON / OFF
+========================= */
+
+flashBtn.addEventListener("click", () => {
+
+  flashEnabled = !flashEnabled;
+
+  if (flashEnabled) {
+
+    flashBtn.textContent =
+      "⚡ Flash ON";
+
+    flashBtn.style.background =
+      "#fff";
+
+    flashBtn.style.color =
+      "#111";
+
+  } else {
+
+    flashBtn.textContent =
+      "⚪ Flash OFF";
+
+    flashBtn.style.background =
+      "#292929";
+
+    flashBtn.style.color =
+      "#fff";
+
+  }
+
+});
+
 
 /* =========================
 START PHOTOBOOTH
@@ -1477,24 +1527,24 @@ async function startPhotobooth() {
       Try actual phone LED flash.
     */
 
-    await realFlash();
+    if (flashEnabled) {
 
+  /*
+    Try real phone LED flash
+  */
 
-    /*
-      Always show screen flash
-      so it works on phones that
-      don't expose the torch.
-    */
+  await realFlash();
 
-    screenFlashEffect();
+  /*
+    Screen flash fallback
+  */
 
+  screenFlashEffect();
 
-    /*
-      Capture AFTER flash starts.
-    */
+}
 
-    const photo =
-      await takePhoto();
+const photo =
+  await takePhoto();
 
 
     photos.push(
