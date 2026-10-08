@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#111111">
+
+  <title>My Photobooth</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, #353535 0%, #111 45%, #050505 100%);
+      color: white;
+      font-family: Arial, Helvetica, sans-serif;
+      overflow-x: hidden;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 520px;
+      margin: auto;
+      padding: 18px 14px 30px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 26px;
+      letter-spacing: 2px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      color: #aaa;
+      font-size: 13px;
+    }
+
+    .camera-box {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      background: #000;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 12px 35px rgba(0,0,0,.45);
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transform: scaleX(-1);
+    }
+
+    .camera-box.mirror-off video {
+      transform: scaleX(1);
+    }
+
+    .flash {
+      position: absolute;
+      inset: 0;
+      background: white;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .flash.active {
+      animation: flash .35s ease;
+    }
+
+    @keyframes flash {
+      0% { opacity: .95; }
+      100% { opacity: 0; }
+    }
+
+    .countdown {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 100px;
+      font-weight: 900;
+      text-shadow: 0 4px 25px black;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    .countdown.show {
+      opacity: 1;
+    }
+
+    .status {
+      position: absolute;
+      left: 50%;
+      bottom: 15px;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.65);
+      padding: 8px 15px;
+      border-radius: 30px;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .controls {
+      margin-top: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+    }
+
+    select,
+    button {
+      border: 0;
+      border-radius: 13px;
+      padding: 13px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    select {
+      flex: 1;
+      background: #252525;
+      color: white;
+      outline: none;
+    }
+
+    button {
+      cursor: pointer;
+      background: #292929;
+      color: white;
+    }
+
+    button:active {
+      transform: scale(.97);
+    }
+
+    .capture {
+      width: 100%;
+      background: white;
+      color: black;
+      font-size: 18px;
+      padding: 16px;
+      border-radius: 16px;
+    }
+
+    .capture:disabled {
+      opacity: .45;
+    }
+
+    .filters {
+      display: flex;
+      gap: 7px;
+      overflow-x: auto;
+      padding: 3px 0 5px;
+      scrollbar-width: none;
+    }
+
+    .filters::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filter-btn {
+      flex: 0 0 auto;
+      padding: 10px 13px;
+      font-size: 12px;
+      background: #242424;
+    }
+
+    .filter-btn.active {
+      background: white;
+      color: black;
+    }
+
+    .preview-section {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .preview-section.show {
+      display: block;
+    }
+
+    .preview-title {
+      text-align: center;
+      margin-bottom: 10px;
+      color: #ddd;
+      font-weight: bold;
+    }
+
+    canvas {
+      width: 100%;
+      display: block;
+      border-radius: 16px;
+      background: white;
+    }
+
+    .result-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+      margin-top: 10px;
+    }
+
+    .download {
+      background: #fff;
+      color: #111;
+    }
+
+    .retake {
+      background: #333;
+    }
+
+    .shot-counter {
+      text-align: center;
+      color: #aaa;
+      font-size: 13px;
+      margin-top: 9px;
+    }
+
+    .settings {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .small-button {
+      width: 100%;
+    }
+
+    .error {
+      display: none;
+      margin-top: 10px;
+      background: #4b1515;
+      color: #ffd4d4;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .error.show {
+      display: block;
+    }
+
+    footer {
+      text-align: center;
+      color: #666;
+      font-size: 11px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <header>
+    <h1>PHOTOBOOTH</h1>
+    <p>Take 4 photos • Make memories ✨</p>
+  </header>
+
+  <div class="camera-box" id="cameraBox">
+
+    <video id="video" autoplay playsinline muted></video>
+
+    <div class="flash" id="flash"></div>
+
+    <div class="countdown" id="countdown"></div>
+
+    <div class="status" id="status">
+      Starting camera...
+    </div>
+
+  </div>
+
+  <div class="controls">
+
+    <div class="row">
+
+      <select id="timer">
+        <option value="3">Timer: 3 sec</option>
+        <option value="5">Timer: 5 sec</option>
+        <option value="10">Timer: 10 sec</option>
+      </select>
+
+      <select id="layout">
+        <option value="2x2">Grid: 2 × 2</option>
+        <option value="1x4">Grid: 1 × 4</option>
+      </select>
+
+    </div>
+
+    <div class="filters">
+
+      <button class="filter-btn active" data-filter="none">
+        Normal
+      </button>
+
+      <button class="filter-btn" data-filter="grayscale">
+        B&W
+      </button>
+
+      <button class="filter-btn" data-filter="sepia">
+        Vintage
+      </button>
+
+      <button class="filter-btn" data-filter="warm">
+        Warm
+      </button>
+
+      <button class="filter-btn" data-filter="cool">
+        Cool
+      </button>
+
+      <button class="filter-btn" data-filter="contrast">
+        Contrast
+      </button>
+
+    </div>
+
+    <div class="settings">
+
+      <button class="small-button" id="cameraBtn">
+        🔄 Switch Camera
+      </button>
+
+      <button class="small-button" id="mirrorBtn">
+        🪞 Mirror: ON
+      </button>
+
+    </div>
+
+    <button class="capture" id="captureBtn">
+      📸 START PHOTOBOOTH
+    </button>
+
+  </div>
+
+  <div class="shot-counter" id="shotCounter">
+    0 / 4 photos
+  </div>
+
+  <div class="preview-section" id="previewSection">
+
+    <div class="preview-title">
+      Your Photobooth Result
+    </div>
+
+    <canvas id="resultCanvas"></canvas>
+
+    <div class="result-buttons">
+
+      <button class="retake" id="retakeBtn">
+        ↩ Retake
+      </button>
+
+      <button class="download" id="downloadBtn">
+        ⬇ Download
+      </button>
+
+    </div>
+
+  </div>
+
+  <div class="error" id="error"></div>
+
+  <footer>
+    Photos are processed locally in your browser.
+  </footer>
+
+</div>
+
+<script>
+
+const video = document.getElementById("video");
+const cameraBox = document.getElementById("cameraBox");
+const flash = document.getElementById("flash");
+const countdown = document.getElementById("countdown");
+const statusText = document.getElementById("status");
+
+const timerSelect = document.getElementById("timer");
+const layoutSelect = document.getElementById("layout");
+
+const captureBtn = document.getElementById("captureBtn");
+const cameraBtn = document.getElementById("cameraBtn");
+const mirrorBtn = document.getElementById("mirrorBtn");
+
+const shotCounter = document.getElementById("shotCounter");
+
+const previewSection = document.getElementById("previewSection");
+const resultCanvas = document.getElementById("resultCanvas");
+
+const downloadBtn = document.getElementById("downloadBtn");
+const retakeBtn = document.getElementById("retakeBtn");
+
+const errorBox = document.getElementById("error");
+
+let stream = null;
+let facingMode = "user";
+let mirror = true;
+
+let selectedFilter = "none";
+let photos = [];
+let busy = false;
+
+const MAX_PHOTOS = 4;
+
+
+/* =========================
+   CAMERA
+========================= */
+
+async function startCamera() {
+
+  try {
+
+    errorBox.classList.remove("show");
+
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+    }
+
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: facingMode,
+        width: {
+          ideal: 1280
+        },
+        height: {
+          ideal: 1280
+        }
+      },
+      audio: false
+    });
+
+    video.srcObject = stream;
+
+    statusText.textContent = "Camera ready 📸";
+
+    cameraBox.classList.toggle("mirror-off", !mirror);
+
+  } catch (error) {
+
+    console.error(error);
+
+    statusText.textContent = "Camera unavailable";
+
+    errorBox.textContent =
+      "Hindi ma-access ang camera. Siguraduhing HTTPS ang GitHub Pages site at pinayagan mo ang Camera permission sa browser.";
+
+    errorBox.classList.add("show");
+  }
+}
+
+
+/* =========================
+   FILTERS
+========================= */
+
+document.querySelectorAll(".filter-btn").forEach(button => {
+
+  button.addEventListener("click", () => {
+
+    document
+      .querySelectorAll(".filter-btn")
+      .forEach(btn => btn.classList.remove("active"));
+
+    button.classList.add("active");
+
+    selectedFilter = button.dataset.filter;
+
+    updateVideoFilter();
+
+  });
+
+});
+
+
+function updateVideoFilter() {
+
+  let filter = "";
+
+  switch (selectedFilter) {
+
+    case "grayscale":
+      filter = "grayscale(1)";
+      break;
+
+    case "sepia":
+      filter = "sepia(0.8) contrast(1.05)";
+      break;
+
+    case "warm":
+      filter = "saturate(1.35) sepia(.18) contrast(1.05)";
+      break;
+
+    case "cool":
+      filter = "saturate(.9) hue-rotate(12deg) contrast(1.05)";
+      break;
+
+    case "contrast":
+      filter = "contrast(1.35) saturate(1.1)";
+      break;
+
+    default:
+      filter = "none";
+
+  }
+
+  video.style.filter = filter;
+
+}
+
+
+/* =========================
+   MIRROR
+========================= */
+
+mirrorBtn.addEventListener("click", () => {
+
+  mirror = !mirror;
+
+  mirrorBtn.textContent =
+    mirror ? "🪞 Mirror: ON" : "🪞 Mirror: OFF";
+
+  cameraBox.classList.toggle("mirror-off", !mirror);
+
+});
+
+
+/* =========================
+   SWITCH CAMERA
+========================= */
+
+cameraBtn.addEventListener("click", async () => {
+
+  if (busy) return;
+
+  facingMode =
+    facingMode === "user" ? "environment" : "user";
+
+  await startCamera();
+
+});
+
+
+/* =========================
+   COUNTDOWN
+========================= */
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
+async function countdownTimer(seconds) {
+
+  countdown.classList.add("show");
+
+  for (let i = seconds; i > 0; i--) {
+
+    countdown.textContent = i;
+
+    await sleep(1000);
+
+  }
+
+  countdown.textContent = "📸";
+
+  await sleep(350);
+
+  countdown.classList.remove("show");
+
+}
+
+
+/* =========================
+   TAKE PHOTO
+========================= */
+
+function takePhoto() {
+
+  const width = video.videoWidth;
+  const height = video.videoHeight;
+
+  const canvas = document.createElement("canvas");
+
+  canvas.width = width;
+  canvas.height = height;
+
+  const ctx = canvas.getContext("2d");
+
+  /*
+    Mirror front camera just like the preview.
+  */
+
+  if (mirror) {
+
+    ctx.translate(width, 0);
+    ctx.scale(-1, 1);
+
+  }
+
+  ctx.drawImage(
+    video,
+    0,
+    0,
+    width,
+    height
+  );
+
+  /*
+    Apply filter to captured image.
+  */
+
+  if (selectedFilter !== "none") {
+
+    const imageData =
+      ctx.getImageData(
+        0,
+        0,
+        width,
+        height
+      );
+
+    applyFilter(
+      imageData,
+      selectedFilter
+    );
+
+    ctx.putImageData(
+      imageData,
+      0,
+      0
+    );
+
+  }
+
+  return canvas;
+
+}
+
+
+/* =========================
+   IMAGE FILTER ENGINE
+========================= */
+
+function applyFilter(imageData, filter) {
+
+  const data = imageData.data;
+
+  for (let i = 0; i < data.length; i += 4) {
+
+    let r = data[i];
+    let g = data[i + 1];
+    let b = data[i + 2];
+
+    if (filter === "grayscale") {
+
+      const gray =
+        0.299 * r +
+        0.587 * g +
+        0.114 * b;
+
+      r = gray;
+      g = gray;
+      b = gray;
+
+    }
+
+    else if (filter === "sepia") {
+
+      const nr =
+        r * 0.393 +
+        g * 0.769 +
+        b * 0.189;
+
+      const ng =
+        r * 0.349 +
+        g * 0.686 +
+        b * 0.168;
+
+      const nb =
+        r * 0.272 +
+        g * 0.534 +
+        b * 0.131;
+
+      r = nr;
+      g = ng;
+      b = nb;
+
+    }
+
+    else if (filter === "warm") {
+
+      r *= 1.10;
+      g *= 1.02;
+      b *= 0.90;
+
+    }
+
+    else if (filter === "cool") {
+
+      r *= 0.90;
+      g *= 1.00;
+      b *= 1.12;
+
+    }
+
+    else if (filter === "contrast") {
+
+      const factor = 1.35;
+
+      r = factor * (r - 128) + 128;
+      g = factor * (g - 128) + 128;
+      b = factor * (b - 128) + 128;
+
+    }
+
+    data[i] =
+      Math.max(0, Math.min(255, r));
+
+    data[i + 1] =
+      Math.max(0, Math.min(255, g));
+
+    data[i + 2] =
+      Math.max(0, Math.min(255, b));
+
+  }
+
+}
+
+
+/* =========================
+   FLASH
+========================= */
+
+function doFlash() {
+
+  flash.classList.remove("active");
+
+  void flash.offsetWidth;
+
+  flash.classList.add("active");
+
+}
+
+
+/* =========================
+   PHOTOBOOTH
+========================= */
+
+captureBtn.addEventListener("click", startPhotobooth);
+
+
+async function startPhotobooth() {
+
+  if (busy) return;
+
+  if (!stream) {
+
+    await startCamera();
+
+    if (!stream) return;
+
+  }
+
+  busy = true;
+
+  captureBtn.disabled = true;
+
+  photos = [];
+
+  previewSection.classList.remove("show");
+
+  shotCounter.textContent = "0 / 4 photos";
+
+  const seconds =
+    Number(timerSelect.value);
+
+  for (let i = 0; i < MAX_PHOTOS; i++) {
+
+    statusText.textContent =
+      `Photo ${i + 1} of ${MAX_PHOTOS}`;
+
+    await countdownTimer(seconds);
+
+    doFlash();
+
+    const photo = takePhoto();
+
+    photos.push(photo);
+
+    shotCounter.textContent =
+      `${photos.length} / 4 photos`;
+
+    await sleep(600);
+
+  }
+
+  statusText.textContent =
+    "Done! 🎉";
+
+  createPhotoGrid();
+
+  previewSection.classList.add("show");
+
+  busy = false;
+
+  captureBtn.disabled = false;
+
+}
+
+
+/* =========================
+   PHOTO GRID
+========================= */
+
+function createPhotoGrid() {
+
+  const layout =
+    layoutSelect.value;
+
+  const firstPhoto = photos[0];
+
+  const photoW = firstPhoto.width;
+  const photoH = firstPhoto.height;
+
+  let cols;
+  let rows;
+
+  if (layout === "2x2") {
+
+    cols = 2;
+    rows = 2;
+
+  } else {
+
+    cols = 1;
+    rows = 4;
+
+  }
+
+  /*
+    Final output with white border.
+  */
+
+  const border = 35;
+  const gap = 12;
+
+  const canvasW =
+    photoW * cols +
+    border * 2 +
+    gap * (cols - 1);
+
+  const canvasH =
+    photoH * rows +
+    border * 2 +
+    gap * (rows - 1) +
+    90;
+
+  resultCanvas.width = canvasW;
+  resultCanvas.height = canvasH;
+
+  const ctx =
+    resultCanvas.getContext("2d");
+
+  /*
+    White background
+  */
+
+  ctx.fillStyle = "#ffffff";
+
+  ctx.fillRect(
+    0,
+    0,
+    canvasW,
+    canvasH
+  );
+
+  /*
+    Draw photos.
+  */
+
+  photos.forEach((photo, index) => {
+
+    const row =
+      Math.floor(index / cols);
+
+    const col =
+      index % cols;
+
+    const x =
+      border +
+      col * (photoW + gap);
+
+    const y =
+      border +
+      row * (photoH + gap);
+
+    ctx.drawImage(
+      photo,
+      x,
+      y,
+      photoW,
+      photoH
+    );
+
+  });
+
+  /*
+    Footer
+  */
+
+  ctx.fillStyle = "#111";
+
+  ctx.font =
+    "bold 28px Arial";
+
+  ctx.textAlign = "center";
+
+  ctx.fillText(
+    "PHOTOBOOTH ✨",
+    canvasW / 2,
+    canvasH - 35
+  );
+
+}
+
+
+/* =========================
+   DOWNLOAD
+========================= */
+
+downloadBtn.addEventListener("click", () => {
+
+  const link =
+    document.createElement("a");
+
+  link.download =
+    "my-photobooth.png";
+
+  link.href =
+    resultCanvas.toDataURL(
+      "image/png",
+      1
+    );
+
+  link.click();
+
+});
+
+
+/* =========================
+   RETAKE
+========================= */
+
+retakeBtn.addEventListener("click", () => {
+
+  photos = [];
+
+  shotCounter.textContent =
+    "0 / 4 photos";
+
+  previewSection.classList.remove("show");
+
+  statusText.textContent =
+    "Ready 📸";
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+});
+
+
+/* =========================
+   START
+========================= */
+
+if (
+  navigator.mediaDevices &&
+  navigator.mediaDevices.getUserMedia
+) {
+
+  startCamera();
+
+} else {
+
+  errorBox.textContent =
+    "Hindi supported ng browser/device ang camera access.";
+
+  errorBox.classList.add("show");
+
+}
+
+</script>
+
+</body>
+</html>
