@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#111">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-<title>Imee PhotoBooth</title>
+<title>My PhotoBooth</title>
 
 <style>
 * {
@@ -16,41 +16,42 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background: #090909;
+  background:
+    radial-gradient(circle at top, #393939, #111 45%, #050505);
   color: white;
   font-family: Arial, sans-serif;
 }
 
 .app {
-  width: 100%;
   max-width: 520px;
   margin: auto;
-  padding: 18px 14px 30px;
+  padding: 18px 14px 35px;
 }
 
-header {
+h1 {
   text-align: center;
-  margin-bottom: 15px;
-}
-
-header h1 {
   margin: 0;
   font-size: 27px;
   letter-spacing: 2px;
 }
 
-header p {
+.subtitle {
+  text-align: center;
   color: #aaa;
   font-size: 13px;
+  margin: 7px 0 15px;
 }
+
+/* CAMERA */
 
 .camera {
   position: relative;
   width: 100%;
-  aspect-ratio: 3/4;
-  background: black;
+  aspect-ratio: 3 / 4;
   overflow: hidden;
-  border-radius: 22px;
+  border-radius: 24px;
+  background: #000;
+  box-shadow: 0 15px 40px rgba(0,0,0,.5);
 }
 
 video {
@@ -64,15 +65,41 @@ video {
   transform: scaleX(1);
 }
 
+/* EFFECT */
+
+.effect {
+  position: absolute;
+  left: 50%;
+  top: 26%;
+  transform: translateX(-50%);
+  font-size: 90px;
+  line-height: 1;
+  z-index: 5;
+  pointer-events: none;
+  filter: drop-shadow(0 5px 5px rgba(0,0,0,.35));
+  display: none;
+}
+
+.effect.show {
+  display: block;
+}
+
+/* COUNTDOWN */
+
 .countdown {
   position: absolute;
   inset: 0;
+  z-index: 10;
+
   display: flex;
   justify-content: center;
   align-items: center;
+
   font-size: 100px;
-  font-weight: bold;
-  text-shadow: 0 5px 25px black;
+  font-weight: 900;
+
+  text-shadow: 0 5px 25px #000;
+
   opacity: 0;
   pointer-events: none;
 }
@@ -81,45 +108,60 @@ video {
   opacity: 1;
 }
 
-/* CAMERA FLASH */
-.flash {
+/* STATUS */
+
+.status {
+  position: absolute;
+  z-index: 20;
+
+  bottom: 14px;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  background: rgba(0,0,0,.7);
+
+  padding: 8px 15px;
+
+  border-radius: 30px;
+
+  font-size: 13px;
+
+  white-space: nowrap;
+}
+
+/* SCREEN FLASH */
+
+.screen-flash {
   position: fixed;
   inset: 0;
+
   background: white;
-  z-index: 9999;
+
+  z-index: 99999;
+
   pointer-events: none;
+
   opacity: 0;
 }
 
-.flash.active {
-  animation: cameraFlash .35s ease-out;
+.screen-flash.active {
+  animation: flash .3s ease-out;
 }
 
-@keyframes cameraFlash {
+@keyframes flash {
+
   0% {
     opacity: 1;
-  }
-
-  30% {
-    opacity: .95;
   }
 
   100% {
     opacity: 0;
   }
+
 }
 
-.status {
-  position: absolute;
-  bottom: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0,0,0,.7);
-  padding: 8px 15px;
-  border-radius: 30px;
-  font-size: 13px;
-  white-space: nowrap;
-}
+/* CONTROLS */
 
 .controls {
   margin-top: 13px;
@@ -129,6 +171,7 @@ video {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+
   margin-bottom: 9px;
 }
 
@@ -136,13 +179,15 @@ select,
 button {
   border: 0;
   border-radius: 13px;
+
   padding: 13px;
+
   font-size: 14px;
   font-weight: bold;
 }
 
 select {
-  background: #242424;
+  background: #252525;
   color: white;
 }
 
@@ -152,27 +197,74 @@ button {
 }
 
 button:active {
-  transform: scale(.97);
+  transform: scale(.96);
 }
 
-.capture {
+.start {
   width: 100%;
+
   background: white;
-  color: black;
+  color: #111;
+
   font-size: 18px;
+
   padding: 16px;
-  margin-top: 9px;
+
+  margin-top: 10px;
 }
 
-.capture:disabled {
-  opacity: .4;
+/* EFFECT BUTTONS */
+
+.effect-title {
+  font-size: 13px;
+  color: #aaa;
+  margin: 13px 0 7px;
 }
+
+.effects {
+  display: flex;
+  gap: 8px;
+
+  overflow-x: auto;
+
+  padding-bottom: 5px;
+}
+
+.effects::-webkit-scrollbar {
+  display: none;
+}
+
+.effect-btn {
+  min-width: 70px;
+  flex-shrink: 0;
+
+  background: #252525;
+
+  font-size: 27px;
+
+  padding: 9px;
+}
+
+.effect-btn span {
+  display: block;
+  font-size: 10px;
+  margin-top: 4px;
+}
+
+.effect-btn.active {
+  background: white;
+  color: #111;
+}
+
+/* FILTERS */
 
 .filters {
   display: flex;
   gap: 7px;
+
   overflow-x: auto;
-  margin-bottom: 9px;
+
+  margin-top: 8px;
 }
 
 .filters::-webkit-scrollbar {
@@ -180,8 +272,10 @@ button:active {
 }
 
 .filter {
-  flex: 0 0 auto;
+  flex-shrink: 0;
+
   padding: 10px 13px;
+
   font-size: 12px;
 }
 
@@ -190,21 +284,31 @@ button:active {
   color: black;
 }
 
+/* OTHER BUTTONS */
+
 .options {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+
+  margin-top: 9px;
 }
 
 .counter {
   text-align: center;
+
   color: #aaa;
+
   font-size: 13px;
-  margin: 9px 0;
+
+  margin: 10px;
 }
+
+/* RESULT */
 
 .preview {
   display: none;
+
   margin-top: 20px;
 }
 
@@ -218,16 +322,21 @@ button:active {
 
 canvas {
   width: 100%;
+
   display: block;
+
   background: white;
-  border-radius: 14px;
+
+  border-radius: 16px;
 }
 
 .actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
+
   gap: 8px;
-  margin-top: 9px;
+
+  margin-top: 10px;
 }
 
 .download {
@@ -235,13 +344,20 @@ canvas {
   color: black;
 }
 
+/* ERROR */
+
 .error {
   display: none;
+
   background: #551919;
   color: #ffdede;
+
   padding: 12px;
+
   border-radius: 12px;
+
   margin-top: 10px;
+
   font-size: 13px;
 }
 
@@ -253,18 +369,32 @@ canvas {
 
 <body>
 
-<div class="flash" id="flash"></div>
+<div class="screen-flash" id="screenFlash"></div>
 
 <div class="app">
 
-<header>
-  <h1>PHOTOBOOTH</h1>
-  <p>Take memories together ✨</p>
-</header>
+<h1>IMEE PHOTOBOOTH</h1>
+
+<div class="subtitle">
+Take cute photos & make memories ✨
+</div>
+
+<!-- CAMERA -->
 
 <div class="camera" id="camera">
 
-  <video id="video" autoplay playsinline muted></video>
+  <video id="video"
+         autoplay
+         playsinline
+         muted></video>
+
+  <!-- HEAD EFFECT -->
+
+  <div class="effect" id="effect">
+    🎩
+  </div>
+
+  <!-- COUNTDOWN -->
 
   <div class="countdown" id="countdown"></div>
 
@@ -274,193 +404,399 @@ canvas {
 
 </div>
 
+
 <div class="controls">
 
-  <div class="row">
+<!-- TIMER / PHOTO COUNT -->
 
-    <select id="timer">
-      <option value="3">⏱ 3 Seconds</option>
-      <option value="5">⏱ 5 Seconds</option>
-      <option value="10">⏱ 10 Seconds</option>
-    </select>
+<div class="row">
 
-    <select id="shots">
-      <option value="2">📸 2 Photos</option>
-      <option value="3">📸 3 Photos</option>
-      <option value="4">📸 4 Photos</option>
-      <option value="5">📸 5 Photos</option>
-      <option value="6">📸 6 Photos</option>
-      <option value="7">📸 7 Photos</option>
-      <option value="8">📸 8 Photos</option>
-    </select>
+<select id="timer">
 
-  </div>
+<option value="3">
+⏱ 3 Seconds
+</option>
 
-  <div class="filters">
+<option value="5">
+⏱ 5 Seconds
+</option>
 
-    <button class="filter active" data-filter="none">
-      Normal
-    </button>
+<option value="10">
+⏱ 10 Seconds
+</option>
 
-    <button class="filter" data-filter="gray">
-      B&W
-    </button>
+</select>
 
-    <button class="filter" data-filter="sepia">
-      Vintage
-    </button>
 
-    <button class="filter" data-filter="warm">
-      Warm
-    </button>
+<select id="photoCount">
 
-    <button class="filter" data-filter="cool">
-      Cool
-    </button>
+<option value="2">
+📸 2 Photos
+</option>
 
-    <button class="filter" data-filter="contrast">
-      Contrast
-    </button>
+<option value="3">
+📸 3 Photos
+</option>
 
-  </div>
+<option value="4">
+📸 4 Photos
+</option>
 
-  <div class="options">
+<option value="5">
+📸 5 Photos
+</option>
 
-    <button id="cameraBtn">
-      🔄 Camera
-    </button>
+<option value="6">
+📸 6 Photos
+</option>
 
-    <button id="mirrorBtn">
-      🪞 Mirror ON
-    </button>
+<option value="7">
+📸 7 Photos
+</option>
 
-  </div>
+<option value="8">
+📸 8 Photos
+</option>
 
-  <button class="capture" id="capture">
-    📸 START PHOTOBOOTH
-  </button>
+</select>
 
 </div>
 
-<div class="counter" id="counter">
-  0 / 4 photos
+
+<!-- EFFECTS -->
+
+<div class="effect-title">
+✨ Choose an effect
 </div>
 
-<div class="preview" id="preview">
+<div class="effects">
 
-  <h3>Your PhotoBooth ✨</h3>
+<button class="effect-btn active"
+        data-effect="none">
 
-  <canvas id="result"></canvas>
+❌
+<span>None</span>
 
-  <div class="actions">
+</button>
 
-    <button id="retake">
-      ↩ Retake
-    </button>
 
-    <button class="download" id="download">
-      ⬇ Download
-    </button>
+<button class="effect-btn"
+        data-effect="🎩">
 
-  </div>
+🎩
+<span>Top Hat</span>
+
+</button>
+
+
+<button class="effect-btn"
+        data-effect="👑">
+
+👑
+<span>Crown</span>
+
+</button>
+
+
+<button class="effect-btn"
+        data-effect="🐰">
+
+🐰
+<span>Bunny</span>
+
+</button>
+
+
+<button class="effect-btn"
+        data-effect="🐱">
+
+🐱
+<span>Cat</span>
+
+</button>
+
+
+<button class="effect-btn"
+        data-effect="🤠">
+
+🤠
+<span>Cowboy</span>
+
+</button>
+
+
+<button class="effect-btn"
+        data-effect="🎀">
+
+🎀
+<span>Bow</span>
+
+</button>
+
+
+<button class="effect-btn"
+        data-effect="🌸">
+
+🌸
+<span>Flower</span>
+
+</button>
+
+
+<button class="effect-btn"
+        data-effect="🧢">
+
+🧢
+<span>Cap</span>
+
+</button>
 
 </div>
 
-<div class="error" id="error"></div>
+
+<!-- FILTERS -->
+
+<div class="effect-title">
+🎨 Photo filter
+</div>
+
+<div class="filters">
+
+<button class="filter active"
+        data-filter="none">
+Normal
+</button>
+
+<button class="filter"
+        data-filter="gray">
+B&W
+</button>
+
+<button class="filter"
+        data-filter="sepia">
+Vintage
+</button>
+
+<button class="filter"
+        data-filter="warm">
+Warm
+</button>
+
+<button class="filter"
+        data-filter="cool">
+Cool
+</button>
+
+<button class="filter"
+        data-filter="contrast">
+Contrast
+</button>
 
 </div>
+
+
+<!-- CAMERA OPTIONS -->
+
+<div class="options">
+
+<button id="cameraBtn">
+🔄 Camera
+</button>
+
+<button id="mirrorBtn">
+🪞 Mirror ON
+</button>
+
+</div>
+
+
+<!-- START -->
+
+<button class="start"
+        id="startBtn">
+
+📸 START PHOTOBOOTH
+
+</button>
+
+</div>
+
+
+<div class="counter"
+     id="counter">
+
+0 / 4 photos
+
+</div>
+
+
+<!-- RESULT -->
+
+<div class="preview"
+     id="preview">
+
+<h3>
+Your Photobooth ✨
+</h3>
+
+<canvas id="result"></canvas>
+
+<div class="actions">
+
+<button id="retake">
+↩ Retake
+</button>
+
+<button class="download"
+        id="download">
+
+⬇ Download
+
+</button>
+
+</div>
+
+</div>
+
+
+<div class="error"
+     id="error"></div>
+
+</div>
+
 
 <script>
 
-const video = document.getElementById("video");
-const camera = document.getElementById("camera");
-const flash = document.getElementById("flash");
+const video =
+document.getElementById("video");
 
-const countdown = document.getElementById("countdown");
-const status = document.getElementById("status");
+const camera =
+document.getElementById("camera");
 
-const timer = document.getElementById("timer");
-const shotsSelect = document.getElementById("shots");
+const effect =
+document.getElementById("effect");
 
-const capture = document.getElementById("capture");
-const cameraBtn = document.getElementById("cameraBtn");
-const mirrorBtn = document.getElementById("mirrorBtn");
+const countdown =
+document.getElementById("countdown");
 
-const counter = document.getElementById("counter");
+const statusText =
+document.getElementById("status");
 
-const preview = document.getElementById("preview");
-const result = document.getElementById("result");
+const screenFlash =
+document.getElementById("screenFlash");
 
-const download = document.getElementById("download");
-const retake = document.getElementById("retake");
+const timer =
+document.getElementById("timer");
 
-const error = document.getElementById("error");
+const photoCount =
+document.getElementById("photoCount");
+
+const startBtn =
+document.getElementById("startBtn");
+
+const cameraBtn =
+document.getElementById("cameraBtn");
+
+const mirrorBtn =
+document.getElementById("mirrorBtn");
+
+const counter =
+document.getElementById("counter");
+
+const preview =
+document.getElementById("preview");
+
+const result =
+document.getElementById("result");
+
+const retake =
+document.getElementById("retake");
+
+const download =
+document.getElementById("download");
+
+const errorBox =
+document.getElementById("error");
+
 
 let stream = null;
+
 let facingMode = "user";
+
 let mirror = true;
+
+let selectedEffect = "none";
+
 let selectedFilter = "none";
 
 let photos = [];
+
 let busy = false;
 
 
 /* =========================
-   CAMERA
+CAMERA
 ========================= */
 
 async function startCamera() {
 
   try {
 
-    error.classList.remove("show");
+    errorBox.classList.remove("show");
 
     if (stream) {
-      stream.getTracks().forEach(
-        track => track.stop()
-      );
+
+      stream
+        .getTracks()
+        .forEach(track => track.stop());
+
     }
 
+
     stream =
-      await navigator.mediaDevices.getUserMedia({
+      await navigator.mediaDevices
+      .getUserMedia({
 
         video: {
+
           facingMode: facingMode,
+
           width: {
             ideal: 1280
           },
+
           height: {
             ideal: 1280
           }
+
         },
 
         audio: false
 
       });
 
+
     video.srcObject = stream;
+
 
     camera.classList.toggle(
       "no-mirror",
       !mirror
     );
 
-    status.textContent =
+
+    statusText.textContent =
       "Camera ready 📸";
 
-  }
 
-  catch (e) {
+  } catch (err) {
 
-    console.error(e);
+    console.error(err);
 
-    error.textContent =
-      "Hindi ma-access ang camera. I-check ang Camera permission at siguraduhing HTTPS ang website.";
+    errorBox.textContent =
+      "Hindi ma-access ang camera. I-check ang Camera permission at siguraduhing HTTPS ang GitHub Pages.";
 
-    error.classList.add("show");
-
-    status.textContent =
-      "Camera unavailable";
+    errorBox.classList.add("show");
 
   }
 
@@ -468,93 +804,167 @@ async function startCamera() {
 
 
 /* =========================
-   FILTER
+EFFECT SELECTOR
 ========================= */
 
-document.querySelectorAll(".filter")
-.forEach(button => {
+document
+.querySelectorAll(".effect-btn")
+.forEach(btn => {
 
-  button.addEventListener("click", () => {
+  btn.addEventListener("click", () => {
 
     document
-      .querySelectorAll(".filter")
-      .forEach(b =>
-        b.classList.remove("active")
-      );
+    .querySelectorAll(".effect-btn")
+    .forEach(b =>
+      b.classList.remove("active")
+    );
 
-    button.classList.add("active");
 
-    selectedFilter =
-      button.dataset.filter;
+    btn.classList.add("active");
 
-    updateVideoFilter();
+
+    selectedEffect =
+      btn.dataset.effect;
+
+
+    if (
+      selectedEffect === "none"
+    ) {
+
+      effect.classList.remove("show");
+
+    } else {
+
+      effect.textContent =
+        selectedEffect;
+
+      effect.classList.add("show");
+
+    }
 
   });
 
 });
 
 
-function updateVideoFilter() {
+/* =========================
+FILTER SELECTOR
+========================= */
 
-  switch(selectedFilter) {
+document
+.querySelectorAll(".filter")
+.forEach(btn => {
 
-    case "gray":
-      video.style.filter =
-        "grayscale(1)";
-      break;
+  btn.addEventListener("click", () => {
 
-    case "sepia":
-      video.style.filter =
-        "sepia(.8) contrast(1.05)";
-      break;
+    document
+    .querySelectorAll(".filter")
+    .forEach(b =>
+      b.classList.remove("active")
+    );
 
-    case "warm":
-      video.style.filter =
-        "saturate(1.35) sepia(.15)";
-      break;
 
-    case "cool":
-      video.style.filter =
-        "saturate(.9) hue-rotate(12deg)";
-      break;
+    btn.classList.add("active");
 
-    case "contrast":
-      video.style.filter =
-        "contrast(1.4)";
-      break;
 
-    default:
-      video.style.filter =
-        "none";
+    selectedFilter =
+      btn.dataset.filter;
+
+
+    updateFilter();
+
+  });
+
+});
+
+
+function updateFilter() {
+
+  let filter = "none";
+
+
+  if (selectedFilter === "gray") {
+
+    filter =
+      "grayscale(1)";
 
   }
+
+
+  else if (
+    selectedFilter === "sepia"
+  ) {
+
+    filter =
+      "sepia(.8) contrast(1.05)";
+
+  }
+
+
+  else if (
+    selectedFilter === "warm"
+  ) {
+
+    filter =
+      "saturate(1.35) sepia(.15)";
+
+  }
+
+
+  else if (
+    selectedFilter === "cool"
+  ) {
+
+    filter =
+      "saturate(.9) hue-rotate(12deg)";
+
+  }
+
+
+  else if (
+    selectedFilter === "contrast"
+  ) {
+
+    filter =
+      "contrast(1.4)";
+
+  }
+
+
+  video.style.filter =
+    filter;
 
 }
 
 
 /* =========================
-   MIRROR
+MIRROR
 ========================= */
 
-mirrorBtn.addEventListener("click", () => {
+mirrorBtn.addEventListener(
+  "click",
+  () => {
 
-  mirror = !mirror;
+    mirror = !mirror;
 
-  mirrorBtn.textContent =
-    mirror
+
+    mirrorBtn.textContent =
+      mirror
       ? "🪞 Mirror ON"
       : "🪞 Mirror OFF";
 
-  camera.classList.toggle(
-    "no-mirror",
-    !mirror
-  );
 
-});
+    camera.classList.toggle(
+      "no-mirror",
+      !mirror
+    );
+
+  }
+);
 
 
 /* =========================
-   SWITCH CAMERA
+SWITCH CAMERA
 ========================= */
 
 cameraBtn.addEventListener(
@@ -563,10 +973,12 @@ cameraBtn.addEventListener(
 
     if (busy) return;
 
+
     facingMode =
       facingMode === "user"
-        ? "environment"
-        : "user";
+      ? "environment"
+      : "user";
+
 
     await startCamera();
 
@@ -575,43 +987,48 @@ cameraBtn.addEventListener(
 
 
 /* =========================
-   SLEEP
+SLEEP
 ========================= */
 
 function sleep(ms) {
 
   return new Promise(
-    resolve => setTimeout(resolve, ms)
+    resolve =>
+      setTimeout(resolve, ms)
   );
 
 }
 
 
 /* =========================
-   COUNTDOWN
+COUNTDOWN
 ========================= */
 
 async function runCountdown(seconds) {
 
   countdown.classList.add("show");
 
+
   for (
-    let number = seconds;
-    number > 0;
-    number--
+    let i = seconds;
+    i > 0;
+    i--
   ) {
 
     countdown.textContent =
-      number;
+      i;
 
     await sleep(1000);
 
   }
 
+
   countdown.textContent =
     "📸";
 
+
   await sleep(300);
+
 
   countdown.classList.remove("show");
 
@@ -619,30 +1036,110 @@ async function runCountdown(seconds) {
 
 
 /* =========================
-   FLASH EFFECT
+REAL PHONE FLASH
 ========================= */
 
-function cameraFlash() {
-
-  flash.classList.remove("active");
+async function realFlash() {
 
   /*
-    Force browser reflow so animation
-    can run again every photo.
+    Some Android browsers support
+    the torch constraint.
+
+    Front cameras normally don't
+    have a controllable LED.
   */
 
-  void flash.offsetWidth;
+  if (!stream) return;
 
-  flash.classList.add("active");
+
+  const track =
+    stream.getVideoTracks()[0];
+
+
+  if (!track) return;
+
+
+  try {
+
+    const capabilities =
+      track.getCapabilities();
+
+
+    if (
+      capabilities &&
+      capabilities.torch
+    ) {
+
+      await track.applyConstraints({
+
+        advanced: [
+          {
+            torch: true
+          }
+        ]
+
+      });
+
+
+      await sleep(120);
+
+
+      await track.applyConstraints({
+
+        advanced: [
+          {
+            torch: false
+          }
+        ]
+
+      });
+
+
+      return true;
+
+    }
+
+  } catch (e) {
+
+    console.log(
+      "Torch not supported",
+      e
+    );
+
+  }
+
+
+  return false;
 
 }
 
 
 /* =========================
-   TAKE PHOTO
+SCREEN FLASH
 ========================= */
 
-function takePhoto() {
+function screenFlashEffect() {
+
+  screenFlash.classList.remove(
+    "active"
+  );
+
+
+  void screenFlash.offsetWidth;
+
+
+  screenFlash.classList.add(
+    "active"
+  );
+
+}
+
+
+/* =========================
+TAKE PHOTO
+========================= */
+
+async function takePhoto() {
 
   const width =
     video.videoWidth;
@@ -650,21 +1147,42 @@ function takePhoto() {
   const height =
     video.videoHeight;
 
-  const canvas =
-    document.createElement("canvas");
 
-  canvas.width = width;
-  canvas.height = height;
+  const canvas =
+    document.createElement(
+      "canvas"
+    );
+
+
+  canvas.width =
+    width;
+
+  canvas.height =
+    height;
+
 
   const ctx =
     canvas.getContext("2d");
 
+
+  /*
+    Mirror photo
+  */
+
   if (mirror) {
 
-    ctx.translate(width, 0);
-    ctx.scale(-1, 1);
+    ctx.translate(
+      width,
+      0
+    );
+
+    ctx.scale(
+      -1,
+      1
+    );
 
   }
+
 
   ctx.drawImage(
     video,
@@ -674,13 +1192,17 @@ function takePhoto() {
     height
   );
 
+
   /*
-    Apply filter to actual photo.
+    Apply filter
   */
 
-  if (selectedFilter !== "none") {
+  if (
+    selectedFilter !==
+    "none"
+  ) {
 
-    const imageData =
+    const data =
       ctx.getImageData(
         0,
         0,
@@ -688,18 +1210,56 @@ function takePhoto() {
         height
       );
 
+
     applyFilter(
-      imageData,
+      data,
       selectedFilter
     );
 
+
     ctx.putImageData(
-      imageData,
+      data,
       0,
       0
     );
 
   }
+
+
+  /*
+    Draw head effect
+  */
+
+  if (
+    selectedEffect !==
+    "none"
+  ) {
+
+    ctx.save();
+
+    ctx.textAlign =
+      "center";
+
+    ctx.textBaseline =
+      "middle";
+
+    /*
+      Position near upper head.
+    */
+
+    ctx.font =
+      `${Math.floor(width * .20)}px Arial`;
+
+    ctx.fillText(
+      selectedEffect,
+      width / 2,
+      height * .20
+    );
+
+    ctx.restore();
+
+  }
+
 
   return canvas;
 
@@ -707,13 +1267,17 @@ function takePhoto() {
 
 
 /* =========================
-   FILTER ENGINE
+FILTER ENGINE
 ========================= */
 
-function applyFilter(imageData, filter) {
+function applyFilter(
+  imageData,
+  filter
+) {
 
   const data =
     imageData.data;
+
 
   for (
     let i = 0;
@@ -721,11 +1285,19 @@ function applyFilter(imageData, filter) {
     i += 4
   ) {
 
-    let r = data[i];
-    let g = data[i + 1];
-    let b = data[i + 2];
+    let r =
+      data[i];
 
-    if (filter === "gray") {
+    let g =
+      data[i + 1];
+
+    let b =
+      data[i + 2];
+
+
+    if (
+      filter === "gray"
+    ) {
 
       const gray =
         .299 * r +
@@ -738,7 +1310,10 @@ function applyFilter(imageData, filter) {
 
     }
 
-    else if (filter === "sepia") {
+
+    else if (
+      filter === "sepia"
+    ) {
 
       const nr =
         r * .393 +
@@ -761,7 +1336,10 @@ function applyFilter(imageData, filter) {
 
     }
 
-    else if (filter === "warm") {
+
+    else if (
+      filter === "warm"
+    ) {
 
       r *= 1.10;
       g *= 1.03;
@@ -769,7 +1347,10 @@ function applyFilter(imageData, filter) {
 
     }
 
-    else if (filter === "cool") {
+
+    else if (
+      filter === "cool"
+    ) {
 
       r *= .90;
       g *= 1.00;
@@ -777,29 +1358,42 @@ function applyFilter(imageData, filter) {
 
     }
 
-    else if (filter === "contrast") {
 
-      const factor = 1.4;
+    else if (
+      filter === "contrast"
+    ) {
+
+      const f = 1.4;
 
       r =
-        factor * (r - 128) + 128;
+        f * (r - 128) + 128;
 
       g =
-        factor * (g - 128) + 128;
+        f * (g - 128) + 128;
 
       b =
-        factor * (b - 128) + 128;
+        f * (b - 128) + 128;
 
     }
 
+
     data[i] =
-      Math.max(0, Math.min(255, r));
+      Math.max(
+        0,
+        Math.min(255, r)
+      );
 
     data[i + 1] =
-      Math.max(0, Math.min(255, g));
+      Math.max(
+        0,
+        Math.min(255, g)
+      );
 
     data[i + 2] =
-      Math.max(0, Math.min(255, b));
+      Math.max(
+        0,
+        Math.min(255, b)
+      );
 
   }
 
@@ -807,10 +1401,10 @@ function applyFilter(imageData, filter) {
 
 
 /* =========================
-   PHOTOBOOTH
+START PHOTOBOOTH
 ========================= */
 
-capture.addEventListener(
+startBtn.addEventListener(
   "click",
   startPhotobooth
 );
@@ -820,6 +1414,7 @@ async function startPhotobooth() {
 
   if (busy) return;
 
+
   if (!stream) {
 
     await startCamera();
@@ -828,22 +1423,36 @@ async function startPhotobooth() {
 
   }
 
+
   busy = true;
 
-  capture.disabled = true;
+  startBtn.disabled =
+    true;
+
 
   photos = [];
 
-  preview.classList.remove("show");
+
+  preview.classList.remove(
+    "show"
+  );
+
 
   const total =
-    Number(shotsSelect.value);
+    Number(
+      photoCount.value
+    );
+
+
+  const seconds =
+    Number(
+      timer.value
+    );
+
 
   counter.textContent =
     `0 / ${total} photos`;
 
-  const seconds =
-    Number(timer.value);
 
   for (
     let i = 0;
@@ -851,65 +1460,82 @@ async function startPhotobooth() {
     i++
   ) {
 
-    status.textContent =
+    statusText.textContent =
       `Photo ${i + 1} of ${total}`;
 
-    await runCountdown(seconds);
 
     /*
-      Flash happens exactly when
-      the photo is captured.
+      Countdown
     */
 
-    cameraFlash();
+    await runCountdown(
+      seconds
+    );
+
+
+    /*
+      Try actual phone LED flash.
+    */
+
+    await realFlash();
+
+
+    /*
+      Always show screen flash
+      so it works on phones that
+      don't expose the torch.
+    */
+
+    screenFlashEffect();
+
+
+    /*
+      Capture AFTER flash starts.
+    */
 
     const photo =
-      takePhoto();
+      await takePhoto();
 
-    photos.push(photo);
+
+    photos.push(
+      photo
+    );
+
 
     counter.textContent =
       `${photos.length} / ${total} photos`;
 
-    /*
-      Small pause between shots.
-    */
 
-    await sleep(700);
+    await sleep(650);
 
   }
 
-  status.textContent =
+
+  statusText.textContent =
     "Done! 🎉";
+
 
   createGrid();
 
-  preview.classList.add("show");
+
+  preview.classList.add(
+    "show"
+  );
+
 
   busy = false;
 
-  capture.disabled = false;
+  startBtn.disabled =
+    false;
 
 }
 
 
 /* =========================
-   GRID CALCULATION
+GRID
 ========================= */
 
 function getGrid(total) {
-
-  /*
-    Maximum 8 photos.
-
-    2 = 1 x 2
-    3 = 1 x 3
-    4 = 2 x 2
-    5 = 2 x 3
-    6 = 2 x 3
-    7 = 2 x 4
-    8 = 2 x 4
-  */
 
   if (total === 2)
     return {
@@ -917,11 +1543,13 @@ function getGrid(total) {
       rows: 2
     };
 
+
   if (total === 3)
     return {
       cols: 1,
       rows: 3
     };
+
 
   if (total === 4)
     return {
@@ -929,11 +1557,13 @@ function getGrid(total) {
       rows: 2
     };
 
+
   if (total === 5)
     return {
       cols: 2,
       rows: 3
     };
+
 
   if (total === 6)
     return {
@@ -941,11 +1571,13 @@ function getGrid(total) {
       rows: 3
     };
 
+
   if (total === 7)
     return {
       cols: 2,
       rows: 4
     };
+
 
   return {
     cols: 2,
@@ -956,7 +1588,7 @@ function getGrid(total) {
 
 
 /* =========================
-   CREATE FINAL GRID
+CREATE RESULT
 ========================= */
 
 function createGrid() {
@@ -964,8 +1596,10 @@ function createGrid() {
   const total =
     photos.length;
 
+
   const grid =
     getGrid(total);
+
 
   const cols =
     grid.cols;
@@ -973,38 +1607,43 @@ function createGrid() {
   const rows =
     grid.rows;
 
+
   const photoW =
     photos[0].width;
 
   const photoH =
     photos[0].height;
 
-  const border = 30;
-  const gap = 10;
-  const footer = 80;
 
-  const canvasW =
+  const border =
+    30;
+
+  const gap =
+    10;
+
+  const footer =
+    75;
+
+
+  result.width =
     border * 2 +
     photoW * cols +
     gap * (cols - 1);
 
-  const canvasH =
+
+  result.height =
     border * 2 +
     photoH * rows +
     gap * (rows - 1) +
     footer;
 
-  result.width =
-    canvasW;
-
-  result.height =
-    canvasH;
 
   const ctx =
     result.getContext("2d");
 
+
   /*
-    White background
+    Background
   */
 
   ctx.fillStyle =
@@ -1013,9 +1652,10 @@ function createGrid() {
   ctx.fillRect(
     0,
     0,
-    canvasW,
-    canvasH
+    result.width,
+    result.height
   );
+
 
   /*
     Photos
@@ -1025,18 +1665,26 @@ function createGrid() {
     (photo, index) => {
 
       const row =
-        Math.floor(index / cols);
+        Math.floor(
+          index / cols
+        );
+
 
       const col =
         index % cols;
 
+
       const x =
         border +
-        col * (photoW + gap);
+        col *
+        (photoW + gap);
+
 
       const y =
         border +
-        row * (photoH + gap);
+        row *
+        (photoH + gap);
+
 
       ctx.drawImage(
         photo,
@@ -1049,6 +1697,7 @@ function createGrid() {
     }
   );
 
+
   /*
     Footer
   */
@@ -1057,22 +1706,23 @@ function createGrid() {
     "#111";
 
   ctx.font =
-    "bold 26px Arial";
+    "bold 25px Arial";
 
   ctx.textAlign =
     "center";
 
+
   ctx.fillText(
     "PHOTOBOOTH ✨",
-    canvasW / 2,
-    canvasH - 28
+    result.width / 2,
+    result.height - 28
   );
 
 }
 
 
 /* =========================
-   DOWNLOAD
+DOWNLOAD
 ========================= */
 
 download.addEventListener(
@@ -1080,15 +1730,20 @@ download.addEventListener(
   () => {
 
     const link =
-      document.createElement("a");
+      document.createElement(
+        "a"
+      );
+
 
     link.download =
-      `photobooth-${photos.length}-photos.png`;
+      `photobooth-${photos.length}.png`;
+
 
     link.href =
       result.toDataURL(
         "image/png"
       );
+
 
     link.click();
 
@@ -1097,7 +1752,7 @@ download.addEventListener(
 
 
 /* =========================
-   RETAKE
+RETAKE
 ========================= */
 
 retake.addEventListener(
@@ -1106,15 +1761,19 @@ retake.addEventListener(
 
     photos = [];
 
-    preview.classList.remove("show");
+
+    preview.classList.remove(
+      "show"
+    );
+
 
     counter.textContent =
-      "0 / " +
-      shotsSelect.value +
-      " photos";
+      `0 / ${photoCount.value} photos`;
 
-    status.textContent =
+
+    statusText.textContent =
       "Ready 📸";
+
 
     window.scrollTo({
       top: 0,
@@ -1126,39 +1785,40 @@ retake.addEventListener(
 
 
 /* =========================
-   SHOT COUNTER UPDATE
+COUNTER
 ========================= */
 
-shotsSelect.addEventListener(
+photoCount.addEventListener(
   "change",
   () => {
 
     counter.textContent =
-      "0 / " +
-      shotsSelect.value +
-      " photos";
+      `0 / ${photoCount.value} photos`;
 
   }
 );
 
 
 /* =========================
-   START CAMERA
+START
 ========================= */
 
 if (
   navigator.mediaDevices &&
-  navigator.mediaDevices.getUserMedia
+  navigator.mediaDevices
+    .getUserMedia
 ) {
 
   startCamera();
 
 } else {
 
-  error.textContent =
-    "Your browser does not support camera access.";
+  errorBox.textContent =
+    "Hindi supported ng browser ang camera.";
 
-  error.classList.add("show");
+  errorBox.classList.add(
+    "show"
+  );
 
 }
 
